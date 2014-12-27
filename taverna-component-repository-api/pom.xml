@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.apache.taverna.engine</groupId>
+		<artifactId>taverna-engine</artifactId>
+		<version>3.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>taverna-component-repository-api</artifactId>
+	<packaging>bundle</packaging>
+	<name>Apache Taverna Component Repository API</name>
+	<inceptionYear>2014</inceptionYear>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.taverna.language</groupId>
+			<artifactId>taverna-scufl2-api</artifactId>
+			<version>${taverna.language.version}</version>
+		</dependency>
+		<dependency>
+			<!-- FIXME: Use jena-osgi bundle -->
+			<groupId>org.apache.clerezza.ext</groupId>
+			<artifactId>com.hp.hpl.jena</artifactId>
+			<version>0.6-incubating</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Export-Package>net.sf.taverna.t2.component.api,net.sf.taverna.t2.component.api.profile,net.sf.taverna.t2.component.api.profile.doc</Export-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.8.3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<catalog>${basedir}/src/main/catalog/catalog.xml</catalog>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
