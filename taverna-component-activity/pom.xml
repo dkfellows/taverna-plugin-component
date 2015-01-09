@@ -7,7 +7,7 @@
 		<artifactId>taverna-engine</artifactId>
 		<version>3.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>taverna-component-repository-impl</artifactId>
+	<artifactId>taverna-component-activity</artifactId>
 	<packaging>bundle</packaging>
 	<name>Apache Taverna Component Repository implementation</name>
 

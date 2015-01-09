@@ -18,8 +18,8 @@
   </properties>
 	<modules>
     <module>taverna-component-repository-api</module>
-    <module>taverna-component-repository-impl</module>
-  </modules>
+    <module>taverna-component-activity</module>
+	</modules>
   <repositories>
     <repository>
       <id>taverna-incubating</id>
