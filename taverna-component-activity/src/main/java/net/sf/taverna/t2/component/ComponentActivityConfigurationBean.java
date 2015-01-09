@@ -6,7 +6,9 @@ import static net.sf.taverna.t2.component.api.config.ComponentPropertyNames.FAMI
 import static net.sf.taverna.t2.component.api.config.ComponentPropertyNames.REGISTRY_BASE;
 import static org.apache.log4j.Logger.getLogger;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -21,20 +23,30 @@ import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
 
 import org.apache.log4j.Logger;
 
+import uk.org.taverna.scufl2.api.annotation.Annotation;
 import uk.org.taverna.scufl2.api.container.WorkflowBundle;
 import uk.org.taverna.scufl2.api.port.InputWorkflowPort;
 import uk.org.taverna.scufl2.api.port.OutputWorkflowPort;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
  * Component activity configuration bean.
  */
 public class ComponentActivityConfigurationBean extends
 		ComponentVersionIdentification implements Serializable {
+	private static final String COMPUTED_OUTPUT_DEPTH = "http://FIXME/FIX/ME";// FIXME
+	private static final RDFNode ANY_NODE = null;
 	public static final String ERROR_CHANNEL = "error_channel";
 	public static final List<String> ignorableNames = Arrays
 			.asList(ERROR_CHANNEL);
@@ -94,8 +106,27 @@ public class ComponentActivityConfigurationBean extends
 
 		for (InputWorkflowPort iwp : w.getMainWorkflow().getInputPorts())
 			inputs.add(makeInputDefinition(iwp));
-		for (OutputWorkflowPort owp : w.getMainWorkflow().getOutputPorts())
-			outputs.add(makeOutputDefinition(0, owp.getName()));//FIXME
+		for (OutputWorkflowPort owp : w.getMainWorkflow().getOutputPorts()) {
+			int depth = 0;
+			annotationSearch: for (Annotation a : owp.getAnnotations()) {
+				try {
+					Model m = ModelFactory.createDefaultModel();
+					Resource subject = m.getResource(owp.getURI().toString());
+					Property prop = m.createProperty(COMPUTED_OUTPUT_DEPTH);
+					m.getReader().read(m, new StringReader(a.getRDFContent()),
+							a.getBody().toString());
+					for (Statement s : m
+							.listStatements(subject, prop, ANY_NODE).toList())
+						if (s.getObject().isLiteral()) {
+							depth = s.getLiteral().getInt();
+							break annotationSearch;
+						}
+				} catch (IOException e) {
+					logger.error("failed to read annotations on " + owp + " of " + w, e);
+				}
+			}
+			outputs.add(makeOutputDefinition(depth, owp.getName()));
+		}
 
 		try {
 			eh = util.getFamily(getRegistryBase(), getFamilyName())
