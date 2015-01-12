@@ -27,6 +27,9 @@ import org.apache.log4j.Logger;
 import uk.org.taverna.scufl2.api.container.WorkflowBundle;
 import uk.org.taverna.scufl2.api.port.InputWorkflowPort;
 import uk.org.taverna.scufl2.api.port.OutputWorkflowPort;
+import uk.org.taverna.scufl2.validation.structural.ReportStructuralValidationListener;
+import uk.org.taverna.scufl2.validation.structural.StructuralValidator;
+import uk.org.taverna.scufl2.validation.structural.ValidatorState;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -92,10 +95,14 @@ public class ComponentActivityConfigurationBean extends
 		List<ActivityOutputPortDefinitionBean> outputs = result
 				.getOutputPortDefinitions();
 
+		StructuralValidator sv = new StructuralValidator();
+		sv.checkStructure(w, new ReportStructuralValidationListener());
+		ValidatorState vs = sv.getValidatorState();
+
 		for (InputWorkflowPort iwp : w.getMainWorkflow().getInputPorts())
 			inputs.add(makeInputDefinition(iwp));
 		for (OutputWorkflowPort owp : w.getMainWorkflow().getOutputPorts())
-			outputs.add(makeOutputDefinition(0, owp.getName()));//FIXME
+			outputs.add(makeOutputDefinition(vs.getPortResolvedDepth(owp), owp.getName()));
 
 		try {
 			eh = util.getFamily(getRegistryBase(), getFamilyName())
