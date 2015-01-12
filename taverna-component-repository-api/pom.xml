@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.apache.taverna.engine</groupId>
 		<artifactId>taverna-engine</artifactId>
-		<version>3.0.0-SNAPSHOT</version>
+		<version>3.1.0-incubating-SNAPSHOT</version>
 	</parent>
 	<artifactId>taverna-component-repository-api</artifactId>
 	<packaging>bundle</packaging>
@@ -32,7 +32,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-						<Export-Package>net.sf.taverna.t2.component.api,net.sf.taverna.t2.component.api.profile,net.sf.taverna.t2.component.api.profile.doc</Export-Package>
+						<Export-Package>org.apache.taverna.component.api,org.apache.taverna.component.api.profile,org.apache.taverna.component.api.profile.doc</Export-Package>
 					</instructions>
 				</configuration>
 			</plugin>
