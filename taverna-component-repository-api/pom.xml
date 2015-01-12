@@ -32,7 +32,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-						<Export-Package>net.sf.taverna.t2.component.api,net.sf.taverna.t2.component.api.profile,net.sf.taverna.t2.component.api.profile.doc</Export-Package>
+						<Export-Package>org.apache.taverna.component.api,org.apache.taverna.component.api.profile,org.apache.taverna.component.api.profile.doc</Export-Package>
 					</instructions>
 				</configuration>
 			</plugin>
