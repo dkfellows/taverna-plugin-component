@@ -137,7 +137,7 @@ public class ComponentActivity extends
 	}
 
 	private void copyAnnotations() {
-		// FIXME Completely wrong way of doing this!
+		// TODO Completely wrong way of doing this!
 		try {
 			//annUtils.getAnnotation(subject, uriForAnnotation)
 			String annotationValue = getAnnotationString(realizingDataflow,
