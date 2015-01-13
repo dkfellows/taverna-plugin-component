@@ -6,7 +6,7 @@ package org.apache.taverna.component.profile;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Locale.UK;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
-import static org.apache.log4j.Logger.getLogger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +17,8 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.apache.log4j.Logger;
 import org.apache.taverna.component.api.ComponentException;
+import org.slf4j.Logger;
 
 import uk.org.taverna.configuration.app.ApplicationConfiguration;
 

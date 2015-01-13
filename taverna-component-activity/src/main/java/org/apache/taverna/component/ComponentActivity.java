@@ -2,7 +2,7 @@ package org.apache.taverna.component;
 
 import static net.sf.taverna.t2.workflowmodel.utils.AnnotationTools.getAnnotationString;
 import static net.sf.taverna.t2.workflowmodel.utils.AnnotationTools.setAnnotationString;
-import static org.apache.log4j.Logger.getLogger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.MalformedURLException;
 import java.util.Map;
@@ -20,7 +20,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousAc
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.apache.taverna.component.api.ComponentException;
 import org.apache.taverna.component.api.profile.ExceptionHandling;
 import org.apache.taverna.component.registry.ComponentImplementationCache;

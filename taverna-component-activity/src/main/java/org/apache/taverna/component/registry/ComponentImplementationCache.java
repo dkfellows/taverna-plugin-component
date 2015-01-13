@@ -4,14 +4,14 @@
 package org.apache.taverna.component.registry;
 
 import static java.lang.System.currentTimeMillis;
-import static org.apache.log4j.Logger.getLogger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.apache.log4j.Logger;
 import org.apache.taverna.component.api.ComponentException;
 import org.apache.taverna.component.api.Version;
+import org.slf4j.Logger;
 
 import uk.org.taverna.scufl2.api.container.WorkflowBundle;
 

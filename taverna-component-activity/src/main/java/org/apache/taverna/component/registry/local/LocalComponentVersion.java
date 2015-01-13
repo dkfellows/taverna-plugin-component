@@ -5,17 +5,17 @@ package org.apache.taverna.component.registry.local;
 
 import static java.lang.Integer.parseInt;
 import static org.apache.commons.io.FileUtils.readFileToString;
-import static org.apache.log4j.Logger.getLogger;
 import static org.apache.taverna.component.registry.local.LocalComponent.COMPONENT_FILENAME;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
 import org.apache.taverna.component.api.ComponentException;
 import org.apache.taverna.component.registry.ComponentVersion;
 import org.apache.taverna.component.utils.SystemUtils;
+import org.slf4j.Logger;
 
 import uk.org.taverna.scufl2.api.container.WorkflowBundle;
 

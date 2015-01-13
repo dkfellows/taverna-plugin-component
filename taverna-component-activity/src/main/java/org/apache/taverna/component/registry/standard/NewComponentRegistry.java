@@ -1,8 +1,8 @@
 package org.apache.taverna.component.registry.standard;
 
-import static org.apache.log4j.Logger.getLogger;
 import static org.apache.taverna.component.registry.standard.Policy.PRIVATE;
 import static org.apache.taverna.component.utils.SystemUtils.getElementString;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -17,7 +17,6 @@ import javax.xml.bind.JAXBException;
 
 import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 
-import org.apache.log4j.Logger;
 import org.apache.taverna.component.api.Component;
 import org.apache.taverna.component.api.ComponentException;
 import org.apache.taverna.component.api.Family;
@@ -44,6 +43,7 @@ import org.apache.taverna.component.registry.api.Permissions;
 import org.apache.taverna.component.registry.api.PolicyList;
 import org.apache.taverna.component.utils.AnnotationUtils;
 import org.apache.taverna.component.utils.SystemUtils;
+import org.slf4j.Logger;
 
 import uk.org.taverna.scufl2.api.container.WorkflowBundle;
 

@@ -26,7 +26,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static net.sf.taverna.t2.workflowmodel.health.HealthCheck.NO_PROBLEM;
 import static net.sf.taverna.t2.workflowmodel.health.RemoteHealthChecker.contactEndpoint;
-import static org.apache.log4j.Logger.getLogger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -53,7 +53,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.apache.taverna.component.api.ComponentException;
 import org.apache.taverna.component.api.Registry;
 import org.apache.taverna.component.api.profile.ActivityProfile;
@@ -65,6 +64,7 @@ import org.apache.taverna.component.api.profile.doc.Ontology;
 import org.apache.taverna.component.api.profile.doc.Port;
 import org.apache.taverna.component.api.profile.doc.Profile;
 import org.apache.taverna.component.api.profile.doc.SemanticAnnotation;
+import org.slf4j.Logger;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;

@@ -28,12 +28,6 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
-			<!-- FIXME: Remove -->
-			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>taverna-workflowmodel-impl</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>taverna-execution-api</artifactId>
 			<version>${project.parent.version}</version>
@@ -68,15 +62,13 @@
 			<artifactId>taverna-scufl2-validation-structural</artifactId>
 			<version>${taverna.language.version}</version>
 		</dependency>
+		<!-- 
 		<dependency>
 			<groupId>org.apache.taverna.language</groupId>
-			<artifactId>taverna-scufl2-t2flow</artifactId>
+			<artifactId>taverna-scufl2-annotation</artifactId>
 			<version>${taverna.language.version}</version>
-			<scope>test</scope>
-			<!--  Or is this always needed? -->
 		</dependency>
-		<!-- <dependency> <groupId>org.apache.taverna.language</groupId> <artifactId>taverna-scufl2-annotation</artifactId> 
-			<version>${taverna.language.version}</version> </dependency> -->
+		 -->
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>taverna-credential-manager</artifactId>
@@ -84,22 +76,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.jdom</groupId>
-			<artifactId>com.springsource.org.jdom</artifactId>
-			<version>${jdom.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>${commons.io.version}</version>
 		</dependency>
-
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.clerezza.ext</groupId>
 			<artifactId>com.hp.hpl.jena</artifactId>
@@ -113,9 +98,20 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.taverna.language</groupId>
+			<artifactId>taverna-scufl2-t2flow</artifactId>
+			<version>${taverna.language.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

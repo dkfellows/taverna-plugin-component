@@ -5,20 +5,20 @@ package org.apache.taverna.component.registry.local;
 
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
-import static org.apache.log4j.Logger.getLogger;
 import static org.apache.taverna.component.registry.local.LocalComponentRegistry.ENC;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
-import org.apache.log4j.Logger;
 import org.apache.taverna.component.api.ComponentException;
 import org.apache.taverna.component.api.Family;
 import org.apache.taverna.component.api.Registry;
 import org.apache.taverna.component.api.Version;
 import org.apache.taverna.component.registry.Component;
 import org.apache.taverna.component.utils.SystemUtils;
+import org.slf4j.Logger;
 
 import uk.org.taverna.scufl2.api.container.WorkflowBundle;
 

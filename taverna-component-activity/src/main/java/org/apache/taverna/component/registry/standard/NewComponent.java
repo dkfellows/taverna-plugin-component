@@ -203,7 +203,7 @@ class NewComponent extends Component {
 				return new URL(format(htmlPageTemplate,
 						registry.getRegistryBaseString(), getId(), version));
 			} catch (IllegalFormatException | MalformedURLException e) {
-				logger.error(e);
+				logger.error("failed to build description of help location", e);
 				return null;
 			}
 		}

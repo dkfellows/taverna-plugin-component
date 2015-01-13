@@ -22,16 +22,16 @@ package org.apache.taverna.component.profile;
 
 import static java.io.File.createTempFile;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
-import static org.apache.log4j.Logger.getLogger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.taverna.component.api.profile.SemanticAnnotationProfile;
 import org.apache.taverna.component.api.profile.doc.SemanticAnnotation;
+import org.slf4j.Logger;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;

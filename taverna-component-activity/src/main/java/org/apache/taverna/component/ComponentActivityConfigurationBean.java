@@ -1,10 +1,10 @@
 package org.apache.taverna.component;
 
-import static org.apache.log4j.Logger.getLogger;
 import static org.apache.taverna.component.api.config.ComponentPropertyNames.COMPONENT_NAME;
 import static org.apache.taverna.component.api.config.ComponentPropertyNames.COMPONENT_VERSION;
 import static org.apache.taverna.component.api.config.ComponentPropertyNames.FAMILY_NAME;
 import static org.apache.taverna.component.api.config.ComponentPropertyNames.REGISTRY_BASE;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -17,12 +17,12 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPo
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean;
 
-import org.apache.log4j.Logger;
 import org.apache.taverna.component.api.Version;
 import org.apache.taverna.component.api.profile.ExceptionHandling;
 import org.apache.taverna.component.registry.ComponentImplementationCache;
 import org.apache.taverna.component.registry.ComponentUtil;
 import org.apache.taverna.component.registry.ComponentVersionIdentification;
+import org.slf4j.Logger;
 
 import uk.org.taverna.scufl2.api.container.WorkflowBundle;
 import uk.org.taverna.scufl2.api.port.InputWorkflowPort;

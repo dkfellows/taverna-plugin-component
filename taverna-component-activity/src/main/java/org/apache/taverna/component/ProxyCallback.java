@@ -6,7 +6,7 @@ package org.apache.taverna.component;
 import static net.sf.taverna.t2.reference.T2ReferenceType.ErrorDocument;
 import static net.sf.taverna.t2.reference.T2ReferenceType.IdentifiedList;
 import static net.sf.taverna.t2.reference.T2ReferenceType.ReferenceSet;
-import static org.apache.log4j.Logger.getLogger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,10 +28,10 @@ import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorType;
 
-import org.apache.log4j.Logger;
 import org.apache.taverna.component.api.profile.ExceptionHandling;
 import org.apache.taverna.component.api.profile.ExceptionReplacement;
 import org.apache.taverna.component.api.profile.HandleException;
+import org.slf4j.Logger;
 
 /**
  * @author alanrw

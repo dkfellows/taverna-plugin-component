@@ -12,8 +12,8 @@ import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.net.URLEncoder.encode;
 import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 import static org.apache.commons.io.IOUtils.copy;
-import static org.apache.log4j.Logger.getLogger;
 import static org.apache.taverna.component.registry.ClientVersion.VERSION;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -43,10 +43,10 @@ import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.security.credentialmanager.UsernamePassword;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.apache.taverna.component.api.ComponentException;
 import org.apache.taverna.component.registry.standard.Client.MyExperimentConnector.ServerResponse;
 import org.apache.taverna.component.registry.standard.annotations.Unused;
+import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
