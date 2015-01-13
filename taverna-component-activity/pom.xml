@@ -93,53 +93,6 @@
 			<artifactId>commons-io</artifactId>
 			<version>${commons.io.version}</version>
 		</dependency>
-    <!--
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpcore-osgi</artifactId>
-			<version>${apache.httpcore.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>httpcore</artifactId>
-					<groupId>org.apache.httpcomponents</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>httpcore-nio</artifactId>
-					<groupId>org.apache.httpcomponents</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-    -->
-    <!--
-		<dependency>
-		<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient-osgi</artifactId>
-			<version>${apache.httpclient.version}</version>
-			<exclusions>
-			<exclusion>
-				<artifactId>fluent-hc</artifactId>
-				<groupId>org.apache.httpcomponents</groupId>
-			</exclusion>
-			<exclusion>
-				<artifactId>httpclient</artifactId>
-				<groupId>org.apache.httpcomponents</groupId>
-			</exclusion>
-			<exclusion>
-				<artifactId>httpclient-cache</artifactId>
-				<groupId>org.apache.httpcomponents</groupId>
-			</exclusion>
-			<exclusion>
-				<artifactId>httpmime</artifactId>
-				<groupId>org.apache.httpcomponents</groupId>
-			</exclusion>
-			</exclusions>
-		</dependency>
-    -->
-    <dependency> 
-      <groupId>org.apache.commons</groupId>
-      <artifactId>com.springsource.org.apache.commons.httpclient</artifactId>
-      <version>${commons.httpclient.version}</version> 
-    </dependency>
 
 		<dependency>
 			<groupId>log4j</groupId>

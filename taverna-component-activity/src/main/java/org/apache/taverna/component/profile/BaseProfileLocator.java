@@ -3,26 +3,20 @@
  */
 package org.apache.taverna.component.profile;
 
+import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Locale.UK;
-import static org.apache.commons.httpclient.HttpStatus.SC_OK;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.log4j.Logger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.log4j.Logger;
 import org.apache.taverna.component.api.ComponentException;
 
@@ -51,13 +45,8 @@ public class BaseProfileLocator {
 		Long remoteBaseProfileTime = null;
 		long localBaseProfileTime = -1;
 
-		HttpClientParams params = new HttpClientParams();
-		params.setConnectionManagerTimeout(TIMEOUT);
-		params.setSoTimeout(TIMEOUT);
-		HttpClient client = new HttpClient(params);
-
 		try {
-			remoteBaseProfileTime = getRemoteBaseProfileTimestamp(client);
+			remoteBaseProfileTime = getRemoteBaseProfileTimestamp();
 			logger.info("NoticeTime is " + remoteBaseProfileTime);
 		} catch (URISyntaxException e) {
 			logger.error("URI problem", e);
@@ -108,21 +97,29 @@ public class BaseProfileLocator {
 		return format.parse(timestamp).getTime();
 	}
 
-	private long getRemoteBaseProfileTimestamp(HttpClient client)
-			throws URISyntaxException, IOException, HttpException,
-			ParseException {
-		URI baseProfileURI = new URI(BASE_PROFILE_URI);
-		HttpMethod method = new GetMethod(baseProfileURI.toString());
-		int statusCode = client.executeMethod(method);
-		if (statusCode != SC_OK) {
-			logger.warn("HTTP status " + statusCode + " while getting "
-					+ baseProfileURI);
-			return -1;
+	private long getRemoteBaseProfileTimestamp() throws URISyntaxException,
+			IOException, ParseException {
+		URL baseProfileUrl = new URL(BASE_PROFILE_URI);
+		HttpURLConnection c = (HttpURLConnection) baseProfileUrl
+				.openConnection();
+		c.setRequestMethod("HEAD");
+		c.setConnectTimeout(TIMEOUT);
+		c.setReadTimeout(TIMEOUT);
+		c.connect();
+		try {
+			int statusCode = c.getResponseCode();
+			if (statusCode != HTTP_OK) {
+				logger.warn("HTTP status " + statusCode + " while getting "
+						+ baseProfileUrl);
+				return -1;
+			}
+			String lastModified = c.getHeaderField("Last-Modified");
+			if (lastModified == null)
+				return -1;
+			return parseTime(lastModified);
+		} finally {
+			c.disconnect();
 		}
-		Header h = method.getResponseHeader("Last-Modified");
-		if (h == null)
-			return -1;
-		return parseTime(h.getValue());
 	}
 
 	private File getBaseProfileFile() {
