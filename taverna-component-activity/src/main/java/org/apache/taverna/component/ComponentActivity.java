@@ -43,13 +43,15 @@ public class ComponentActivity extends
 	private JsonNode json;
 	private ComponentActivityConfigurationBean bean;
 	private SystemUtils system;
+	@SuppressWarnings("unused")
 	private AnnotationUtils annUtils;
 	private ComponentExceptionFactory cef;
 	
 	private Dataflow realizingDataflow = null;
 
 	ComponentActivity(ComponentUtil util, ComponentImplementationCache cache,
-			Edits edits, SystemUtils system, AnnotationUtils annUtils, ComponentExceptionFactory exnFactory) {
+			Edits edits, SystemUtils system, AnnotationUtils annUtils,
+			ComponentExceptionFactory exnFactory) {
 		this.util = util;
 		this.cache = cache;
 		this.system = system;
@@ -96,9 +98,8 @@ public class ComponentActivity extends
 		InvocationContext originalContext = callback.getContext();
 		ReferenceService rs = originalContext.getReferenceService();
 		InvocationContextImpl newContext = new InvocationContextImpl(rs, null);
-		// for (Object o : originalContext.getEntities(Object.class)) {
+		// for (Object o : originalContext.getEntities(Object.class))
 		// newContext.addEntity(o);
-		// }
 		return newContext;
 	}
 
