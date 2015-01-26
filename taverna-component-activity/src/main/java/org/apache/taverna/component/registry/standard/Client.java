@@ -4,11 +4,16 @@ import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_MOVED_PERM;
+import static java.net.HttpURLConnection.HTTP_MOVED_TEMP;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_SEE_OTHER;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
+import static java.net.HttpURLConnection.HTTP_USE_PROXY;
 import static java.net.URLEncoder.encode;
 import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 import static org.apache.commons.io.IOUtils.copy;
@@ -34,6 +39,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -51,7 +57,17 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+/**
+ * The client for MyExperiment (or other deployments of the same codebase). This
+ * class manages the serialisation and deserialisation of messages and their
+ * exact wire-format, including whatever credentials are required to prove to
+ * the remote service. All the rest of the code has to do is talk
+ * "POJOs over ReST".
+ * 
+ * @author Donal Fellows
+ */
 class Client {
+	private static final int REDIRECT_LIMIT = 5;
 	private static final String API_VERIFICATION_RESOURCE = "/component-profiles.xml";
 	private static final String WHOAMI = "/whoami.xml";
 	private static final String PLUGIN_USER_AGENT = "Taverna2-Component-plugin/"
@@ -62,6 +78,7 @@ class Client {
 	private final URL registryBase;
 	private final JAXBContext jaxbContext;
 	private final CredentialManager cm;
+	private final DocumentBuilderFactory dbf;
 
 	Client(JAXBContext context, URL repository, CredentialManager cm)
 			throws ComponentException {
@@ -73,10 +90,18 @@ class Client {
 		this.cm = cm;
 		this.registryBase = repository;
 		this.jaxbContext = context;
+		this.dbf = DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(false);
 		this.http = new MyExperimentConnector(tryLogIn);
 		logger.info("instantiated client connection engine to " + repository);
 	}
 
+	/**
+	 * Determine if the version of the API that this client code supports is
+	 * actually present on the service URI.
+	 * 
+	 * @return If the API is present.
+	 */
 	public boolean verify() {
 		try {
 			String url = url(API_VERIFICATION_RESOURCE);
@@ -88,6 +113,24 @@ class Client {
 		}
 	}
 
+	/**
+	 * Encode a URI with its query parameters.
+	 * 
+	 * @param uri
+	 *            The base URI, relative to the overall service (which itself is
+	 *            set via the <i>repository</i> parameter to the class
+	 *            constructor).
+	 * @param arguments
+	 *            Key/value pairs; each KV pair is encoded as a string in "
+	 *            <tt>key=value</tt>" form. The keys are assumed to never have a
+	 *            <tt>=</tt> in them.
+	 * @return The composed URL.
+	 * @throws MalformedURLException
+	 *             If the result is invalid, probably because of a bad
+	 *             <i>uri</i> parameter.
+	 * @throws UnsupportedEncodingException
+	 *             Should be impossible.
+	 */
 	private String url(String uri, String... arguments)
 			throws MalformedURLException, UnsupportedEncodingException {
 		StringBuilder uriBuilder = new StringBuilder(uri);
@@ -102,6 +145,10 @@ class Client {
 
 	private Marshaller getMarshaller() throws JAXBException {
 		return jaxbContext.createMarshaller();
+	}
+
+	private Unmarshaller getUnmarshaller() throws JAXBException {
+		return jaxbContext.createUnmarshaller();
 	}
 
 	/**
@@ -127,7 +174,7 @@ class Client {
 			String url = url(uri, query);
 			ServerResponse response;
 			do {
-				if (redirectCounter++ > 5)
+				if (redirectCounter++ > REDIRECT_LIMIT)
 					throw new ComponentException("too many redirects!");
 				logger.info("GET of " + url);
 				response = http.GET(url);
@@ -274,6 +321,20 @@ class Client {
 					response.getCode(), response.getError());
 	}
 
+	/**
+	 * Get the HTTP Basic Auth token for the given URL.
+	 * 
+	 * @param urlString
+	 *            The URL to get the auth token for.
+	 * @param mandatory
+	 *            Whether we <i>must</i> succeed at the token fetch.
+	 * @return The (Base-64 encoded part of the) token, or <tt>null</tt> if no
+	 *         credentials are available for that URL.
+	 * @throws CMException
+	 *             If something goes wrong in the credential manager.
+	 * @throws UnsupportedEncodingException
+	 *             Shouldn't ever happen.
+	 */
 	private String getCredentials(String urlString, boolean mandatory)
 			throws CMException, UnsupportedEncodingException {
 		final URI serviceURI = URI.create(urlString);
@@ -290,33 +351,56 @@ class Client {
 		return null;
 	}
 
+	/**
+	 * Stop the credential manager from remembering the information about a
+	 * particular URL.
+	 * 
+	 * @param baseURL
+	 *            The URL to forget about.
+	 * @throws CMException
+	 *             If something goes wrong.
+	 */
 	private void clearCredentials(String baseURL) throws CMException {
 		for (URI uri : cm.getServiceURIsForAllUsernameAndPasswordPairs())
 			if (uri.toString().startsWith(baseURL))
 				cm.deleteUsernameAndPasswordForService(uri);
 	}
 
-	private static Document getDocumentFromStream(InputStream inputStream)
+	/**
+	 * Read a DOM tree from a stream, possibly with logging.
+	 * 
+	 * @param inputStream
+	 *            The stream to read from.
+	 * @return The DOM document.
+	 * @throws SAXException
+	 *             If something goes wrong during tree building.
+	 * @throws IOException
+	 *             If the stream isn't properly readable.
+	 * @throws ParserConfigurationException
+	 *             Shouldn't happen.
+	 */
+	private Document getDocumentFromStream(InputStream inputStream)
 			throws SAXException, IOException, ParserConfigurationException {
-		DocumentBuilder db = DocumentBuilderFactory.newInstance()
-				.newDocumentBuilder();
-		Document doc;
+		DocumentBuilder db = dbf.newDocumentBuilder();
 		try (InputStream is = new BufferedInputStream(inputStream)) {
 			if (!logger.isDebugEnabled())
-				doc = db.parse(is);
-			else {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				copy(is, baos);
-				String response = baos.toString("UTF-8");
-				logger.info("response message follows\n"
-						+ response.substring(0,
-								min(MESSAGE_TRIM_LENGTH, response.length())));
-				doc = db.parse(new ByteArrayInputStream(baos.toByteArray()));
-			}
+				return db.parse(is);
+
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			copy(is, baos);
+			String response = baos.toString("UTF-8");
+			logger.info("response message follows\n"
+					+ response.substring(0,
+							min(MESSAGE_TRIM_LENGTH, response.length())));
+			return db.parse(new ByteArrayInputStream(baos.toByteArray()));
 		}
-		return doc;
 	}
 
+	/**
+	 * Manages the binding of the credential token to the connection.
+	 * 
+	 * @author Donal Fellows
+	 */
 	class MyExperimentConnector {
 		// authentication settings (and the current user)
 		private String authString = null;
@@ -366,6 +450,20 @@ class Client {
 			return authString != null;
 		}
 
+		/**
+		 * Create a connection to a resource on an HTTP server. Configures a
+		 * number of default things, including the connection credentials.
+		 * 
+		 * @param method
+		 *            The method to connect with.
+		 * @param strURL
+		 *            The URL of the resource to connect to.
+		 * @return The connection.
+		 * @throws MalformedURLException
+		 *             If <i>strURL</i> is invalid.
+		 * @throws IOException
+		 *             If one of a large number of unlikely things goes wrong.
+		 */
 		private HttpURLConnection connect(String method, String strURL)
 				throws MalformedURLException, IOException {
 			HttpURLConnection conn = (HttpURLConnection) new URL(strURL)
@@ -460,7 +558,20 @@ class Client {
 					false);
 		}
 
-		@Unused
+		/**
+		 * Generic method to execute PUT requests to myExperiment server.
+		 * This is only to be called when a user is logged in.
+		 * 
+		 * @param url
+		 *            The URL on myExperiment to direct PUT request to.
+		 * @param xmlDataBody
+		 *            Body of the XML data to be POSTed to strURL.
+		 * @return An object containing XML Document with server's response body
+		 *         and a response code. Response body XML document might be null
+		 *         if there was an error or the user wasn't authorised to
+		 *         perform a certain action. Response code will always be set.
+		 * @throws Exception
+		 */
 		public ServerResponse PUT(String url, Object xmlDataBody)
 				throws Exception {
 			if (!isLoggedIn() && !elevate())
@@ -541,11 +652,11 @@ class Client {
 				case HTTP_NO_CONTENT:
 					return new ServerResponse(HTTP_OK, null, null);
 
-				case HttpURLConnection.HTTP_CREATED:
-				case HttpURLConnection.HTTP_MOVED_PERM:
-				case HttpURLConnection.HTTP_MOVED_TEMP:
-				case HttpURLConnection.HTTP_SEE_OTHER:
-				case HttpURLConnection.HTTP_USE_PROXY:
+				case HTTP_CREATED:
+				case HTTP_MOVED_PERM:
+				case HTTP_MOVED_TEMP:
+				case HTTP_SEE_OTHER:
+				case HTTP_USE_PROXY:
 					return new ServerResponse(conn.getResponseCode(),
 							conn.getHeaderField("Location"), null);
 
@@ -612,9 +723,8 @@ class Client {
 			}
 
 			public <T> T getResponse(Class<T> clazz) throws JAXBException {
-				return jaxbContext.createUnmarshaller()
-						.unmarshal(responseBody.getDocumentElement(), clazz)
-						.getValue();
+				return getUnmarshaller().unmarshal(
+						responseBody.getDocumentElement(), clazz).getValue();
 			}
 
 			/**
